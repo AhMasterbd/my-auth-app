@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,7 +20,50 @@ p a{color:#ff6b81;text-decoration:none;}
 <body>
 <div class="container">
   <h2>Sign Up</h2>
-  <input type="text" id="name" placeholder="Full Name">
+  <input type="text" id="name" placeholder="Name">
   <input type="email" id="email" placeholder="Email">
   <input type="password" id="password" placeholder="Password">
-  <button class="signup-btn" onclick="signup(document.getElementById('
+  <button class="signup-btn" onclick="signup(document.getElementById('name').value,document.getElementById('email').value,document.getElementById('password').value)">Sign Up</button>
+  <button class="google-btn" onclick="googleLogin()">Sign Up with Google</button>
+  <p>Already have an account? <a href="login.html">Login</a></p>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, updateProfile, sendEmailVerification } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBWb3bSkc4ZGZFci8alqcGl77T_FAooQ4M",
+    authDomain: "myweb-7102a.firebaseapp.com",
+    projectId: "myweb-7102a",
+    storageBucket: "myweb-7102a.firebasestorage.app",
+    messagingSenderId: "559208824094",
+    appId: "1:559208824094:web:adf289d2894ad50d021d0f",
+    measurementId: "G-ZLP7R2HTYK"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+async function signup(name,email,password){
+    if(!name||!email||!password){alert("সব ফিল্ড পূরণ করুন"); return;}
+    try{
+        const userCredential = await createUserWithEmailAndPassword(auth,email,password);
+        await updateProfile(userCredential.user,{displayName:name});
+        await sendEmailVerification(userCredential.user);
+        alert("Sign Up সফল! Verification Email পাঠানো হয়েছে।");
+        window.location.href = "login.html";
+    }catch(error){alert(error.message);}
+}
+
+async function googleLogin(){
+    const provider = new GoogleAuthProvider();
+    try{
+        const result = await signInWithPopup(auth,provider);
+        alert("Google Login Successful: "+result.user.displayName);
+        window.location.href = "welcome.html";
+    }catch(error){alert(error.message);}
+}
+</script>
+</body>
+</html>
